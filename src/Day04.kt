@@ -1,45 +1,64 @@
-import kotlin.math.abs
-
-
 fun main() {
-    fun safe(levels: List<Int>): Boolean {
-        var prev: Int? = null
-        var rise: Boolean? = null
-        for (level in levels) {
-            if (prev != null) {
-                if (rise == null)
-                    rise = level > prev
-                else if (rise != level > prev)
-                    return false
+    fun List<String>.hasLetter(letter: Char, row: Int, col: Int): Boolean {
+        val maxRow = size - 1
+        val maxCol = this[0].length - 1
 
-                if (abs(level - prev) !in 1..3) {
-                    return false
-                }
+        return if (row in 0..maxRow && col in 0..maxCol)
+                this[row][col] == letter
+            else
+                false
+    }
+
+    fun List<String>.countWord(word: String, row: Int, col: Int): Int {
+
+        var sum = 0
+        for (i in -1..1)
+            for (j in -1..1) {
+                var found = true
+                for (pos in 0..word.lastIndex)
+                    if (!hasLetter(word[pos], row + pos * i, col + pos * j)) found = false
+                if (found) sum++
             }
-            prev = level
+        return sum
+    }
+
+    fun List<String>.hasX(word: String, row: Int, col: Int): Boolean {
+
+        var firstForward = true
+        var firstBackward = true
+        var secondForward = true
+        var secondBackward = true
+        for (pos in 0..word.lastIndex) {
+            if (!hasLetter(word[pos], row + pos - 1, col + pos - 1)) firstForward = false
+            if (!hasLetter(word[pos], row - pos + 1, col - pos + 1)) firstBackward = false
+            if (!hasLetter(word[pos], row - pos + 1, col + pos - 1)) secondForward = false
+            if (!hasLetter(word[pos], row + pos - 1, col - pos + 1)) secondBackward = false
         }
-        return true
+        return (firstForward || firstBackward) && (secondForward || secondBackward)
     }
 
     fun part1(input: List<String>): Int {
+        var sum = 0
+        for (row in input.indices)
+            for (col in 0 until input[0].length)
+                sum += input.countWord("XMAS", row, col)
 
-        return input.count {
-            safe(it.split(' ').map { it.toInt() })
-        }
+        return sum
     }
 
     fun part2(input: List<String>): Int {
-        return input.count {
-            val levels = it.split(' ').map { it.toInt() }
-            val minusOnes = List(levels.size) { index ->  levels.filterIndexed { filterIndex, _ -> filterIndex != index } }
-            safe(levels) || minusOnes.fold(false){ acc, minusOne -> acc || safe(minusOne) }
-        }
+        var sum = 0
+        for (row in input.indices)
+            for (col in 0 until input[0].length)
+                if (input.hasX("MAS", row, col)) sum++
+
+        return sum
     }
 
     // Or read a large test input from the `src/Day??_test.txt` file:
     val testInput = readInput("Day04_test")
-    check(part1(testInput) == 2)
-    check(part2(testInput) == 4)
+    check(part1(testInput) == 18)
+    check(part2(testInput) == 9)
 
     // Read the input from the `src/Day??.txt` file.
     val input = readInput("Day04")
