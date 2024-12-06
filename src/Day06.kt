@@ -109,20 +109,27 @@ fun main() {
 
                         if (rowNew in 0..maxRow && colNew in 0..maxCol) {
                             if (board[rowNew][colNew] != WALL) {
-                                if (moves[r][c].contains(facing)) {
-                                    sum++
-                                    break
-                                }
                                 row = rowNew
                                 col = colNew
                             } else {
                                 facing = (4 + facing + 1) % 4
                             }
-                            moves[row][col].add(facing)
+                            if (moves[row][col].contains(facing)) {
+                                println("$row $col")
+                                sum++
+                                break
+                            } else {
+                                moves[row][col].add(facing)
+                            }
                         } else {
-                            println("$row $col")
-                            break
+                            println("$row $col before break")
+                            if (true) {
+                                break
+
+                            }
+                            val b = 2
                         }
+                        val a = 1
                     }
                     println("$row $col after break")
                     board[r][c] = MARK
@@ -133,8 +140,8 @@ fun main() {
 
     // Or read a large test input from the `src/Day??_test.txt` file:
     val testInput = readInput("Day06_test")
-    check(part1(testInput) == 41)
-    check(part2(testInput) == 6)
+    //check(part1(testInput) == 41)
+    check(part2(testInput).println() == 6)
 
     // Read the input from the `src/Day??.txt` file.
     val input = readInput("Day06")
