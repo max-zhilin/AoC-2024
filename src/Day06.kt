@@ -97,41 +97,34 @@ fun main() {
         var sum = 0
         for (r in 0..maxRow)
             for (c in 0..maxCol)
-                if (board[r][c] == MARK && c != rowStart && c != colStart) {
+                if (board[r][c] == MARK && !(r == rowStart && c == colStart)) {
                     board[r][c] = WALL
                     row = rowStart
                     col = colStart
                     facing = UP
                     val moves = Array(maxRow + 1) { Array(maxCol + 1) { mutableSetOf<Int>() } }
 
-                    while (true) {
+                    var exit = false
+                    while (!exit) {
                         val (rowNew, colNew) = newCoord(row, col)
 
                         if (rowNew in 0..maxRow && colNew in 0..maxCol) {
                             if (board[rowNew][colNew] != WALL) {
                                 row = rowNew
                                 col = colNew
-                            } else {
+                            } else
                                 facing = (4 + facing + 1) % 4
-                            }
                             if (moves[row][col].contains(facing)) {
-                                println("$row $col")
+                                //println("$row $col")
                                 sum++
                                 break
-                            } else {
+                            } else
                                 moves[row][col].add(facing)
-                            }
                         } else {
-                            println("$row $col before break")
-                            if (true) {
-                                break
-
-                            }
-                            val b = 2
+                            //break
+                            exit = true
                         }
-                        val a = 1
                     }
-                    println("$row $col after break")
                     board[r][c] = MARK
                 }
 
@@ -141,10 +134,10 @@ fun main() {
     // Or read a large test input from the `src/Day??_test.txt` file:
     val testInput = readInput("Day06_test")
     //check(part1(testInput) == 41)
-    check(part2(testInput).println() == 6)
+    check(part2(testInput) == 6)
 
     // Read the input from the `src/Day??.txt` file.
     val input = readInput("Day06")
     //part1(input).println()
-    //part2(input).println()
+    part2(input).println()
 }
