@@ -25,40 +25,33 @@ fun main() {
         return designs.count { isPossible(it) }
     }
 
-    fun part2(input: List<String>): Int {
+    fun part2(input: List<String>): Long {
 
         val input1 = input.first().split(", ")
         val maxLength = input1.maxOf { it.length }
         val towels = input1.toSet()
         val designs = input.takeLastWhile { it.isNotEmpty() }
 
-        fun countPossible(s: String): Int {
+        val cache = mutableMapOf<String, Long>()
 
-            if (s in towels) {
-                var sum = 0
-                for (i in 1..s.length) {
+        fun countPossible(s: String): Long {
+
+            if (s.isEmpty())
+                return 1L
+            else {
+                var sum = 0L
+                for (i in 1..min(s.length, maxLength))
                     if (s.take(i) in towels) {
-                        val count = countPossible(s.drop(i))
-                        if (count != 0)
-                            sum += 1 + count
+                        val rest = s.drop(i)
+                        sum += cache.getOrPut(rest) { countPossible(rest) }
                     }
-                }
-                return 1 + sum
+                return sum
             }
-
-            var sum = 0
-            for (i in 1..min(s.length, maxLength)) {
-
-                if (s.take(i) in towels) {
-                    val count = countPossible(s.drop(i))
-                    if (count != 0)
-                        sum += 1 + count
-                }
-            }
-            return sum
         }
 
-        return designs.sumOf { design -> countPossible(design).also { println("$design $it") } }
+        return designs.sumOf { design ->
+            countPossible(design).also { println("$design $it") }
+        }
     }
 
     // Read a small test input from the `src/Day??_test.txt` file:
@@ -69,10 +62,10 @@ fun main() {
         println("Wrong test: " + part1(testInput))
         throw e
     }
-    check(part2(testInput).println() == 16)
+    check(part2(testInput).println() == 16L)
 
     // Read the input from the `src/Day??.txt` file.
     val input = readInput("Day19")
     //part1(input).println()  // 269
-    part2(input).println()
+    part2(input).println()  // 758839075658876
 }
