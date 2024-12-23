@@ -1,4 +1,18 @@
 
+// Due to the buttons topology
+//+---+---+---+
+//| 7 | 8 | 9 |
+//+---+---+---+
+//| 4 | 5 | 6 |
+//+---+---+---+
+//| 1 | 2 | 3 |
+//+---+---+---+
+//    | 0 | A |
+//    +---+---+
+// down-right is better than right-down
+// left-up is better than up-left
+// left-down is better than down-left
+// right-up is equals up-right
 val nkPaths = mapOf(
     'A' to '0' to "<",
     'A' to '1' to "^<<",
@@ -111,6 +125,11 @@ val nkPaths = mapOf(
     '9' to '7' to "<<",
     '9' to '8' to "<",
 )
+//    +---+---+
+//    | ^ | A |
+//+---+---+---+
+//| < | v | > |
+//+---+---+---+
 val dkAimAndPush = mapOf(
     'A' to 'A' to ("" to 0),
     'A' to '^' to ("<" to 8),
@@ -133,7 +152,7 @@ val dkAimAndPush = mapOf(
     'v' to '<' to ("<" to 8),
     'v' to '>' to (">" to 4),
     '>' to '>' to ("" to 1),
-    '>' to '^' to ("^<" to 9),
+    '>' to '^' to ("<^" to 9),
     '>' to 'A' to ("^" to 4),
     '>' to '<' to ("<<" to 9),
     '>' to 'v' to ("<" to 8),
@@ -176,7 +195,7 @@ fun main() {
             'v' to '<' to "<",
             'v' to '>' to ">",
             '>' to '>' to "",
-            '>' to '^' to "^<",
+            '>' to '^' to "<^",//'>' to '^' to "^<", - there was a mistake
             '>' to 'A' to "^",
             '>' to '<' to "<<",
             '>' to 'v' to "<",
@@ -193,12 +212,11 @@ fun main() {
                 paths[n][entry.key] = ("A" + entry.value + "A").windowed(2) {
                     paths[n - 1][it.first() to it.last()]!!
                 }.sum()
-                //paths[n]['A' to 'A'] = 0
             }
         }
 
         return input.map { line ->
-            line.trimStart('0').dropLast(1).toInt() *
+            line.trimStart('0').dropLast(1).toLong() *
                     ("A" + line).windowed(2) {
                         ("A" + nkPaths[it.first() to it.last()]!! + "A").windowed(2) {
                             paths[steps - 1][it.first() to it.last()]!!
@@ -211,7 +229,7 @@ fun main() {
     // Read a small test input from the `src/Day??_test.txt` file:
     val testInput = readInput("Day21_test")
     try {
-        //check(part1(testInput) == 126384)
+        check(part1(testInput) == 126384)
     } catch (e: IllegalStateException) {
         println("Wrong test: " + part1(testInput))
         throw e
@@ -220,7 +238,7 @@ fun main() {
 
     // Read the input from the `src/Day??.txt` file.
     val input = readInput("Day21")
-    //part1(input).println()  // 202274 // 203670 was too high
+    part1(input).println()  // 202274 // 203670 was too high
     part2(input, 2).println()
-    part2(input, 25).println()  // 1231184498 too low, 288_468_414_653_042 too high (25, A = 1), 286_140_382_749_046 (25, A = 0) too high, 115_148_904_158_880 (24, A = 1) not right
+    part2(input, 25).println()  // 245881705840972  // 1231184498(Int) too low, 288_468_414_653_042 too high (25, A = 1), 286_140_382_749_046 (25, A = 0) too high, 115_148_904_158_880 (24, A = 1) not right
 }
